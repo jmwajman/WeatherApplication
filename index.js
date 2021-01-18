@@ -39,7 +39,34 @@ if (minute < 10) {
   minute = `0${minute}`;
 }
 
-h3.innerHTML = `${hour}:${minute} ${day}  ${date}/${month}/${year}`;
+h3.innerHTML = `Last updated on ${day} at ${hour}:${minute}`;
+
+
+
+function setHomepageValues(response) {
+
+let temperatureValue = document.querySelector("#temperature");
+temperatureValue.innerHTML = Math.round(response.data.main.temp);
+
+let descriptionValue = document.querySelector("p");
+descriptionValue.innerHTML = response.data.weather[0].description;
+
+let humidityValue = document.querySelector("#humidity");
+humidityValue.innerHTML = response.data.main.humidity;
+
+let windValue = document.querySelector("#wind");
+windValue.innerHTML = Math.round (response.data.wind.speed);
+
+let pressureValue = document.querySelector("#pressure");
+pressureValue = reponse.data.main.pressure;
+}
+
+let apiKey = "48ddae8355adb729eaa13fbeedf0ff54";
+let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=wroclaw&appid=${apiKey}&units=metric`;
+
+axios.get(apiUrl).then(setHomepageValues);
+
+
 
 function updateRestWeather(response) {
   let locationRestHumidity = document.querySelector("#humidity");
@@ -56,6 +83,9 @@ function updateRestWeather(response) {
 
   let locationUpdatedName = document.querySelector("#city");
   locationUpdatedName.innerHTML = response.data.name;
+
+  let descriptionUpdateName = document.querySelector("p");
+  descriptionUpdateName.innerHTML = response.data.weather[0].description;
 }
 
 function searchCity(event) {
@@ -103,11 +133,17 @@ function updateLocation(event) {
 
     let updatedCity = document.querySelector("#city");
     updatedCity.innerHTML = response.data.name;
+
+    let updatedDescription = document.querySelector("p");
+    updatedDescription.innerHTML = response.data.weather[0].description;
   }
 }
 
 let temperatureTemplate = document.querySelector("#location");
 temperatureTemplate.addEventListener("click", updateLocation);
+
+
+
 
 function convertToFahrenheit(event) {
   event.preventDefault();
@@ -127,3 +163,5 @@ fahrenheitLink.addEventListener("click", convertToFahrenheit);
 
 let celsiusLink = document.querySelector("#celsius-link");
 celsiusLink.addEventListener("click", convertToCelsius);
+
+
