@@ -34,7 +34,7 @@ form {
 
 p {
   display: block;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 900;
   margin: 0, auto;
   padding-bottom: -15px;
@@ -43,7 +43,7 @@ p {
 }
 
 h2 {
-  padding-top: -1px;
+  padding-top: 9px;
   padding-bottom: 12px;
   font-weight: 900;
   text-align: center;
@@ -54,13 +54,13 @@ h2 {
 
 h3 {
   font-weight: 900;
-  font-size: 15px;
+  font-size: 14px;
   margin: 0 auto;
   text-align: center;
 }
 
 .col-6 img {
-  margin: 40px auto 17px;
+  margin: 45px auto 10px;
 }
 
 .col-6 {
@@ -85,7 +85,7 @@ h5 {
   font-family: "Quicksand", sans-serif;
   font-weight: 600;
   text-align: center;
-  margin-top: 35px;
+  margin-top: 46px;
 }
 
 img {
@@ -112,7 +112,7 @@ footer {
   font-family: "Quicksand", sans-serif;
   font-weight: 100;
   text-align: center;
-  padding-top: 25px;
+  padding-top: 9px;
   color: white;
   text-shadow: 2px 1px 1px #4b4a4a;
   margin: 0 auto;
