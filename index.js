@@ -1,6 +1,6 @@
+function showCurrentTime(){
 let now = new Date();
 let h3 = document.querySelector("h3");
-
 let days = [
   "Sunday",
   "Monday",
@@ -11,37 +11,51 @@ let days = [
   "Saturday"
 ];
 let day = days[now.getDay()];
-let date = now.getDate();
-let months = [
-  "01",
-  "02",
-  "03",
-  "04",
-  "05",
-  "06",
-  "07",
-  "08",
-  "09",
-  "10",
-  "11",
-  "12"
-];
-let month = months[now.getMonth()];
-let year = now.getFullYear();
-
 let hour = now.getHours();
 if (hour < 10) {
   hour = `0${hour}`;
 }
-
 let minute = now.getMinutes();
 if (minute < 10) {
   minute = `0${minute}`;
 }
-
 h3.innerHTML = `Last updated on ${day} at ${hour}:${minute}`;
+}
 
+showCurrentTime ();
 
+function showForecastHours(timestamp){
+  let date = new Date(timestamp);
+  let hours = date.getHours();
+  if (hours <10) {
+    hours = `0${hours}`;
+  }
+  let minutes=date.getMinutes();
+  if (minutes <10) {
+    minutes = `0${minutes}`;
+  }
+  return `${hours}:${minutes}`;
+}
+
+function showForecast(response){
+  
+let forecastElement = document.querySelector("#forecast");
+forecastElement.innerHTML = null;
+let forecast = null;
+
+for (let index=0; index<5; index ++){
+forecast = response.data.list[index];
+forecastElement.innerHTML +=`
+                            <div class="col-2">
+                            <h1>${showForecastHours(forecast.dt*1000)} </h1>
+                            <img src="http://openweathermap.org/img/wn/${
+          forecast.weather[0].icon
+        }@2x.png" width="65"/>
+                            <h6><strong>${Math.round(forecast.main.temp_max)}°</strong> / ${Math.round(forecast.main.temp_min)}°
+                            </h6>
+                        </div>` ;
+                      }
+}
 
 function setHomepageValues(response) {
 
@@ -55,77 +69,19 @@ let windValue = document.querySelector("#wind");
 windValue.innerHTML = Math.round (response.data.wind.speed);
 let pressureValue = document.querySelector("#pressure");
 pressureValue.innerHTML = response.data.main.pressure;
-iconIdValue = response.data.weather[0].id;
-iconNight = response.data.weather[0].icon;
+let iconElement= document.querySelector("#icon");
+iconElement.setAttribute("src", `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`);
 
-if ( iconIdValue < 233 ) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606806.svg`);
-}
-if ( iconIdValue > 299 && iconIdValue <= 311 ) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606801.svg`);
-}
-if ( iconIdValue > 311 && iconIdValue < 322) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606801.svg`);
-}
-if ( iconIdValue > 499 && iconIdValue < 532 ) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606803.svg`);
-}
-if ( iconIdValue > 599 && iconIdValue < 623 ) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/2530/2530005.svg`);
-}
-if ( iconIdValue > 699 && iconIdValue < 782 ) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/727/727890.svg`);
-}
-if ( iconIdValue === 801  || iconIdValue === 802) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606800.svg`);
-}
-if ( iconIdValue === 803) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606796.svg`);
-}
-if ( iconIdValue === 804) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606796.svg`);
-}
-if ( iconIdValue === 800 ) {
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606795.svg`);
-}
-if ( iconNight === "01n" && iconIdValue === 800){
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606807.svg`);
-}
-if ( iconNight === "02n" && iconIdValue === 801){
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/3778/3778748.svg`);
-}
-if ( iconNight === "03n" && iconIdValue === 802){
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/3778/3778748.svg`);
-}
-if ( iconNight === "04n" && iconIdValue === 803){
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/865/865780.svg`);
-}
-if ( iconNight === "04n" && iconIdValue === 804){
-let iconIdValue = document.querySelector("#icon");
-iconIdValue.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/865/865780.svg`);
-}
-
+celsiusTemperature=response.data.main.temp;
 }
 
 let apiKey = "48ddae8355adb729eaa13fbeedf0ff54";  
 let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=wroclaw&appid=${apiKey}&units=metric`;
+let apiUrlTwo = `https://api.openweathermap.org/data/2.5/forecast?q=wroclaw&appid=${apiKey}&units=metric`;
 
-axios.get(apiUrl).then(setHomepageValues);
 
+axios.get(apiUrl).then(setHomepageValues).then(showCurrentTime);
+axios.get(apiUrlTwo).then(showForecast);
 
 function updateRestWeather(response) {
   let locationRestHumidity = document.querySelector("#humidity");
@@ -140,69 +96,10 @@ function updateRestWeather(response) {
   locationUpdatedName.innerHTML = response.data.name;
   let descriptionUpdateName = document.querySelector("p");
   descriptionUpdateName.innerHTML = response.data.weather[0].description;
-  iconIdValueUpdated = response.data.weather[0].id;
-  iconNight = response.data.weather[0].icon;
+  let iconElement= document.querySelector("#icon");
+  iconElement.setAttribute("src", `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`);
 
-if ( iconIdValueUpdated === 800 ) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606795.svg`);
-}
-if ( iconIdValueUpdated < 233 ) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606806.svg`);
-}
-if ( iconIdValueUpdated > 299 && iconIdValueUpdated <= 311 ) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606801.svg`);
-}
-if ( iconIdValueUpdated > 311 &&  iconIdValueUpdated < 322) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606801.svg`);
-}
-if ( iconIdValueUpdated > 499 && iconIdValueUpdated < 532 ) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606803.svg`);
-}
-if ( iconIdValueUpdated > 599 && iconIdValueUpdated < 623 ) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/2530/2530005.svg`);
-}
-if ( iconIdValueUpdated > 699 && iconIdValueUpdated < 782 ) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/727/727890.svg`);
-}
-if ( iconIdValueUpdated === 801  || iconIdValueUpdated === 802) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606800.svg`);
-}
-if ( iconIdValueUpdated === 803) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606796.svg`);
-}
-if ( iconIdValueUpdated === 804) {
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606796.svg`);
-}
-if ( iconNight === "01n" && iconIdValueUpdated === 800){
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606807.svg`);
-}
-if ( iconNight === "02n" && iconIdValueUpdated === 801){
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/3778/3778748.svg`);
-}
-if ( iconNight === "03n" && iconIdValueUpdated === 802){
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/3778/3778748.svg`);
-}
-if ( iconNight === "04n" && iconIdValueUpdated === 803){
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/865/865780.svg`);
-}
-if ( iconNight === "04n" && iconIdValueUpdated === 804){
-let iconIdValueUpdated = document.querySelector("#icon");
-iconIdValueUpdated.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/865/865780.svg`);
-}
+  celsiusTemperature=response.data.main.temp;
 
 }
 
@@ -215,8 +112,10 @@ function searchCity(event) {
 
   let apiKey = "48ddae8355adb729eaa13fbeedf0ff54";
   let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${apiKey}&units=metric`;
+  let apiUrlTwo = `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric`;
 
-  axios.get(apiUrl).then(updateRestWeather);
+  axios.get(apiUrl).then(updateRestWeather).then(showCurrentTime);
+  axios.get(apiUrlTwo).then(showForecast);
 }
 
 let form = document.querySelector("#look-for-place");
@@ -230,8 +129,9 @@ function updateLocation(event) {
     let longitude = position.coords.longitude;
     let apiKey = "48ddae8355adb729eaa13fbeedf0ff54";
     let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
-
-    axios.get(apiUrl).then(showTemperature2);
+    let apiUrlTwo = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(showTemperature2).then(showCurrentTime);
+    axios.get(apiUrlTwo).then(showForecast);
   }
 
   navigator.geolocation.getCurrentPosition(handlePosition);
@@ -249,96 +149,37 @@ function updateLocation(event) {
     updatedCity.innerHTML = response.data.name;
     let updatedDescription = document.querySelector("p");
     updatedDescription.innerHTML = response.data.weather[0].description;
-    iconIdValueCurrent = response.data.weather[0].id;
-    iconNight = response.data.weather[0].icon;
-
-if ( iconIdValueCurrent === 800 ) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606795.svg`);
-}
-if ( iconIdValueCurrent < 233 ) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606806.svg`);
-}
-if ( iconIdValueCurrent > 299 && iconIdValueCurrent <= 311 ) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606801.svg`);
-}
-if ( iconIdValueCurrent > 311 && iconIdValueCurrent < 322) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606801.svg`);
-}
-if ( iconIdValueCurrent > 499 && iconIdValueCurrent < 532 ) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606803.svg`);
-}
-if ( iconIdValueCurrent > 599 && iconIdValueCurrent < 623 ) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/2530/2530005.svg`);
-}
-if ( iconIdValueCurrent > 699 && iconIdValueCurrent < 782 ) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/727/727890.svg`);
-}
-if ( iconIdValueCurrent === 801  || iconIdValueCurrent === 802) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606800.svg`);
-}
-if ( iconIdValueCurrent === 803) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606796.svg`);
-}
-if ( iconIdValueCurrent === 804) {
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/premium-icon/icons/svg/606/606796.svg`);
-}
-if ( iconNight === "01n" && iconIdValueCurrent === 800){
-  let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/606/606807.svg`);
-}
-if ( iconNight === "02n" && iconIdValueCurrent === 801){
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/3778/3778748.svg`);
-}
-if ( iconNight === "03n" && iconIdValueCurrent === 802){
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/3778/3778748.svg`);
-}
-if ( iconNight === "04n" && iconIdValueCurrent === 803){
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/865/865780.svg`);
-}
-if ( iconNight === "04n" && iconIdValueCurrent === 804){
-let iconIdValueCurrent = document.querySelector("#icon");
-iconIdValueCurrent.setAttribute ("src", `https://www.flaticon.com/svg/static/icons/svg/865/865780.svg`);
-}
-
+    let iconElement= document.querySelector("#icon");
+    iconElement.setAttribute("src", `https://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`);
+    celsiusTemperature=response.data.main.temp;
   }
 }
 
 let temperatureTemplate = document.querySelector("#location");
-temperatureTemplate.addEventListener("click", updateLocation);
+temperatureTemplate.addEventListener ("click", updateLocation);
 
-
-
-
-function convertToFahrenheit(event) {
+function displayFahrenheitTemperature(event){
   event.preventDefault();
   let temperatureElement = document.querySelector("#temperature");
-  let temperature = temperatureElement.innerHTML;
-  temperatureElement.innerHTML = 6;
+  celsiusLink.classList.remove("active");
+  fahrenheitLink.classList.add("active");
+  let fahrenheitTemperature = (celsiusTemperature*9)/5+32;
+  temperatureElement.innerHTML=Math.round(fahrenheitTemperature);
 }
 
-function convertToCelsius(event) {
+function displayCelsiusTemperature (event){
   event.preventDefault();
-  let temperatureElement = document.querySelector("#temperature");
-  temperatureElement.innerHTML = 10;
+  celsiusLink.classList.add("active");
+  fahrenheitLink.classList.remove("active");
+
+  let temperatureElement=document.querySelector("#temperature");
+  temperatureElement.innerHTML=Math.round(celsiusTemperature);
 }
 
-let fahrenheitLink = document.querySelector("#fahrenheit-link");
-fahrenheitLink.addEventListener("click", convertToFahrenheit);
+let celsiusTemperature=null;
 
-let celsiusLink = document.querySelector("#celsius-link");
-celsiusLink.addEventListener("click", convertToCelsius);
+let fahrenheitLink=document.querySelector("#fahrenheit-link");
+fahrenheitLink.addEventListener("click", displayFahrenheitTemperature);
 
-
+let celsiusLink=document.querySelector("#celsius-link");
+celsiusLink.addEventListener("click",displayCelsiusTemperature);
